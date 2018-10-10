@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="../js/three.js"></script>
+	<script src="../js/OrbitControls.js"></script>
+	<script src="../js/ObjLoader.js"></script>
+	<!--<script src="../js/LoaderSupport.js" type="text/javascript" charset="utf-8"></script>-->
+	<script src="../js/MTLLoader.js" type="text/javascript" charset="utf-8"></script>
+
+
+</head>
+<body>
+	
+</body>
+<script>
+	//新建一个场景
+	let scene = new THREE.Scene();
+	//创建一个模型正方体模型
+	let geometry = new THREE.BoxGeometry(200, 50, 200);
+	//创建一个材质
+	// let material = new THREE.MeshLambertMaterial({
+	// 	color: '#fff',
+	// 	map: THREE.ImageUtils.loadTexture("../obj/computer/crate.jpg")
+	// });
+	// //添加一个网格模型  模型和材质
+	// let mesh = new THREE.Mesh(geometry, material);
+	// scene.add(mesh);
+	//加载加载器
+//添加天空盒
+	scene.background = new THREE.CubeTextureLoader()
+		.setPath('../img/')
+		.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+
+	//加载材质
+	let mtlLoader = new THREE.MTLLoader();
+	//设置材质路径
+//	mtlLoader.setPath('../obj/computer/');
+	//读取文件
+	mtlLoader.load('../obj/jiqiren/file.mtl', (mtl) => {
+		mtl.preload();
+		let loader = new THREE.OBJLoader();
+		//设置材质
+		loader.setMaterials(mtl);
+		loader.load('../obj/jiqiren/file.obj', (computerObj) => {
+			//缩放到0.1
+			computerObj.emissive=0x00ffff;
+			computerObj.scale.set(20, 20, 20);
+			computerObj.position.y += 25;
+			scene.add(computerObj);
+
+			render()
+		});
+	})
+	mtlLoader.load('../obj/scene/bg.mtl', (mtl) => {
+		mtl.preload();
+		let loader = new THREE.OBJLoader();
+		//设置材质
+		loader.setMaterials(mtl);
+		loader.load('../obj/scene/bg.obj', (computerObj) => {
+			//缩放到0.1
+			computerObj.emissive=0x00ffff;
+			computerObj.scale.set(1000, 1000, 1000);
+			computerObj.position.y += 25;
+			scene.add(computerObj);
+
+			render()
+		});
+	})
+	
+	
+	//添加灯光
+	//点光源	
+	let light = new THREE.PointLight('#fff');
+	//点光源位置
+	light.position.set(300,400,200);
+	//光源加入场景
+	scene.add(light);
+	//加入环境光
+	scene.add(new THREE.AmbientLight('#5a5353'))
+	//加入相机对象 透视相机  //夹角, 长宽比例，
+	let camera = new THREE.PerspectiveCamera(40, 800/600, 1, 100000);
+	//设置相机位置
+	camera.position.set(100, 1500, 2500)
+	//相机朝向场景中心
+	camera.lookAt(scene.position);
+	//创建渲染器
+	let renderer = new THREE.WebGLRenderer();
+	renderer.setSize(1000, 800);
+	document.body.appendChild(renderer.domElement);
+	//渲染
+	render()
+	//使用相机控制器
+	let control = new THREE.OrbitControls(camera);
+	control.addEventListener('change', render)
+	
+	function render() {
+		renderer.render(scene, camera);
+
+	}
+</script>
+</html>

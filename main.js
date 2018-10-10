@@ -9,7 +9,8 @@ const { app, BrowserWindow } = require('electron')
     win = new BrowserWindow({ width: 800, height: 600 })
   
     // 然后加载应用的 index.html。
-    win.loadFile('index.html')
+    // win.loadFile('index.html')
+    win.loadFile('./examples/fly.html')
   
     // 打开开发者工具
     win.webContents.openDevTools()
